@@ -3,8 +3,6 @@ d3.csv('wealth-health-2014.csv', d3.autoType).then((data) => {
   const width = 650 - margin.left - margin.right;
   const height = 500 - margin.top - margin.bottom;
 
-  console.log(data);
-
   const svg = d3
     .select('.chart')
     .append('svg')
@@ -15,26 +13,24 @@ d3.csv('wealth-health-2014.csv', d3.autoType).then((data) => {
     .append('g')
     .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
 
-  // Income
+  // x-value (Income)
   const xExtent = d3.extent(data, (d) => d.Income);
   const xScale = d3.scaleLinear().domain(xExtent).range([0, width]);
 
-  // Life Expectancy
+  // y-value (Life Expectancy)
   const yExtent = d3.extent(data, (d) => d.LifeExpectancy);
   const yScale = d3.scaleLinear().domain(yExtent).range([height, 0]);
 
-  // Radius (Population)
+  // Size (Population)
   const radiusExtent = d3.extent(data, (d) => d.Population);
-  const radiusScale = d3.scaleSqrt().domain(radiusExtent).range([5, 15]);
+  const radiusScale = d3.scaleSqrt().domain(radiusExtent).range([3, 15]);
 
   // Color (Region)
   const regionScale = d3.scaleOrdinal(d3.schemeTableau10);
 
-  console.log(xScale(xExtent[0]), xScale(xExtent[1]));
-  console.log(yScale(yExtent[0]), yScale(yExtent[1]));
-
   const tooltip = d3.select('.tooltip');
 
+  // Append circles
   group
     .selectAll('circle')
     .data(data)
@@ -46,6 +42,7 @@ d3.csv('wealth-health-2014.csv', d3.autoType).then((data) => {
     .attr('cy', (d) => yScale(d.LifeExpectancy))
     .attr('r', (d) => radiusScale(d.Population))
     .on('mouseenter', (event, d) => {
+      // set inner HTML of the tooltip
       const { Country, Region, Population, Income, LifeExpectancy } = d;
       tooltip.html(
         'Country: ' +
@@ -63,30 +60,40 @@ d3.csv('wealth-health-2014.csv', d3.autoType).then((data) => {
           'Life Expectancy: ' +
           LifeExpectancy
       );
+
+      // set position and show tooltip
       const pos = d3.pointer(event, window);
       tooltip.style('top', pos[1] + 'px');
       tooltip.style('left', pos[0] + 'px');
       tooltip.style('display', 'block');
     })
-    .on('mouseleave', (event, d) => {
+    .on('mouseleave', () => {
+      // hide tooltip
       tooltip.style('display', 'none');
     });
 
+  // Append x axis
   const xAxis = d3.axisBottom().scale(xScale).ticks(5, 's');
-
   group
     .append('g')
     .attr('class', 'axis x-axis')
     .call(xAxis)
     .attr('transform', `translate(0, ${height})`);
+  // x-axis title
+  group.append('text').attr('x', 550).attr('y', 450).text('Income');
 
+  // Append y axis
   const yAxis = d3.axisLeft().scale(yScale);
-
   group.append('g').attr('class', 'axis y-axis').call(yAxis);
-  // .attr('transform', `translate(0, ${width})`);
+  // y-axis title
+  group
+    .append('text')
+    .attr('x', 15)
+    .attr('y', 0)
+    .attr('id', 'yLabel')
+    .text('Life Expectancy');
 
-  console.log(regionScale.domain());
-
+  // Append legend label(text)
   group
     .selectAll('div')
     .data(regionScale.domain())
@@ -100,6 +107,7 @@ d3.csv('wealth-health-2014.csv', d3.autoType).then((data) => {
       return d;
     });
 
+  // Append legend rect
   group
     .selectAll('rect')
     .data(regionScale.domain())
@@ -113,15 +121,6 @@ d3.csv('wealth-health-2014.csv', d3.autoType).then((data) => {
     .attr('fill', (d) => {
       return regionScale(d);
     });
-
-  group.append('text').attr('x', 550).attr('y', 450).text('Income');
-
-  group
-    .append('text')
-    .attr('x', 15)
-    .attr('y', 0)
-    .attr('id', 'yLabel')
-    .text('Life Expectancy');
 
   console.log('d3 end');
 });
