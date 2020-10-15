@@ -103,9 +103,9 @@ d3.csv('wealth-health-2014.csv', d3.autoType).then((data) => {
     .attr('x', width - 150)
     .attr('y', (d, i) => 300 + i * 20)
     .text((d) => {
-      console.log('hello', d);
       return d;
-    });
+    })
+    .attr('font-size', '12px');
 
   // Append legend rect
   group
