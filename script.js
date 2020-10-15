@@ -100,7 +100,7 @@ d3.csv('wealth-health-2014.csv', d3.autoType).then((data) => {
     .enter()
     .append('text')
     .attr('class', 'legend-label')
-    .attr('x', width - 150)
+    .attr('x', width - 180)
     .attr('y', (d, i) => 300 + i * 20)
     .text((d) => {
       return d;
@@ -114,7 +114,7 @@ d3.csv('wealth-health-2014.csv', d3.autoType).then((data) => {
     .enter()
     .append('rect')
     .attr('class', 'legend-rect')
-    .attr('x', width - 170)
+    .attr('x', width - 200)
     .attr('y', (d, i) => 300 + i * 20 - 10)
     .attr('width', 10)
     .attr('height', 10)
